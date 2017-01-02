@@ -144,12 +144,20 @@ class eventEntry:
         Firebase.patch(name,{"longitude": longitude})
         Firebase.patch(name,{"picture": picture})
         Firebase.patch(name,{"votes":0})
+        Firebase.patch(name+"/"+"voters",{"placeholder":"voted"})
         storage.child(category+ "/"+"color"+ self.pictureName.get()).put(picture)
     def attachPicture(self):
         root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
         self.pictureName.set(os.path.basename(root.filename))
         print(self.picture.get())
         self.pictureEntry.insert(0,root.filename)
+        self.nameEntry.delete(0, END)
+        self.dateEntry.delete(0, END)
+        self.descriptionEntry.delete(0, END)
+        self.addressEntry.delete(0, END)
+        self.latEntry.delete(0, END)
+        self.longitudeEntry.delete(0, END)
+        self.pictureEntry.delete(0, END)
 
 
 if __name__ == "__main__":
