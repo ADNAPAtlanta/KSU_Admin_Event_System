@@ -12,7 +12,7 @@ except ImportError:
     from tkinter import *
     from tkinter import filedialog
 
-categories = ["fun","academic","greek","networking"]
+categories = ["fun","academic","greek","networking","football"]
 
 config = {
   "apiKey": " AIzaSyCkLEL05gnfbuGaWYVlOmXbkZWb_95CYBE",
@@ -48,6 +48,7 @@ class eventEntry:
         self.longitude = StringVar()
         self.category = StringVar()
         self.picture = StringVar()
+        self.pictureName = StringVar()
 
         self.nameLabel = Label(master, text="name of Event",underline=0)
         self.nameLabel.grid(column=1)
@@ -68,33 +69,21 @@ class eventEntry:
         self.descriptionLabel = Label(master,text="Enter Description", underline=0)
         self.descriptionLabel.grid(column=1)
         self.descriptionEntry = Entry(master, textvariable=self.description, bd=3)
-        self.descriptionEntry.grid(column=1 ,columnspan=2, rowspan=2)
+        self.descriptionEntry.grid(column=1 , rowspan=2)
+
+        self.latLabel = Label(master, text="Enter Latitude", underline=0)
+        self.latLabel.grid(column=1)
+        self.latEntry = Entry(master, textvariable=self.lat, bd=3)
+        self.latEntry.grid(column=1)
+        self.longitudeLabel = Label(master, text="Enter Longitude", underline=0)
+        self.longitudeLabel.grid(column=1)
+        self.longitudeEntry = Entry(master, textvariable=self.longitude, bd=3)
+        self.longitudeEntry.grid(column=1)
 
         self.addressLabel = Label(master,text="Enter Address", underline=0)
         self.addressLabel.grid(column=1)
         self.addressEntry = Entry(master, textvariable=self.address, bd=3)
         self.addressEntry.grid(column=1)
-
-        self.foodChoiceLabel = Label(master, text="Is food available?",underline=0)
-        self.foodChoiceLabel.grid(column=1)
-        self.foodChoiceYes = Radiobutton(master, text="Yes", variable=self.food, value="Yes")
-        self.foodChoiceYes.grid(column=1)
-        self.foodChoiceNo = Radiobutton(master,text="No",variable=self.food,value="No")
-        self.foodChoiceNo.grid(column=1)
-
-        self.alcoholChoiceLabel = Label(master,text= "Will there be alcohol?")
-        self.alcoholChoiceLabel.grid(column=1)
-        self.alcoholChoiceYes = Radiobutton(master,text="Yes",variable=self.alcohol,value="Yes")
-        self.alcoholChoiceYes.grid(column=1)
-        self.alcoholChoiceNo = Radiobutton(master,text="No",variable=self.alcohol,value="No")
-        self.alcoholChoiceNo.grid(column=1)
-
-        self.merchandiseChoiceLabel = Label(master,text= "Will there be merchandise?")
-        self.merchandiseChoiceLabel.grid(column=1)
-        self.merchandiseChoiceYes = Radiobutton(master,text="Yes",variable=self.merchandise,value="Yes")
-        self.merchandiseChoiceYes.grid(column=1)
-        self.merchandiseChoiceNo = Radiobutton(master,text="No",variable=self.merchandise,value="No")
-        self.merchandiseChoiceNo.grid(column=1)
 
         self.pictureLabel = Label(master,text="Attach picture")
         self.pictureLabel.grid(column=1)
@@ -104,6 +93,29 @@ class eventEntry:
         self.attachButton.grid(column=1)
         self.submitButton = Button(master, text="Submit", command=self.post)
         self.submitButton.grid(column=1)
+
+        self.foodChoiceLabel = Label(master, text="Is food available?",underline=0)
+        self.foodChoiceLabel.grid(column=2,row=1)
+        self.foodChoiceYes = Radiobutton(master, text="Yes", variable=self.food, value="Yes")
+        self.foodChoiceYes.grid(column=2)
+        self.foodChoiceNo = Radiobutton(master,text="No",variable=self.food,value="No")
+        self.foodChoiceNo.grid(column=2)
+
+        self.alcoholChoiceLabel = Label(master,text= "Will there be alcohol?")
+        self.alcoholChoiceLabel.grid(column=2)
+        self.alcoholChoiceYes = Radiobutton(master,text="Yes",variable=self.alcohol,value="Yes")
+        self.alcoholChoiceYes.grid(column=2)
+        self.alcoholChoiceNo = Radiobutton(master,text="No",variable=self.alcohol,value="No")
+        self.alcoholChoiceNo.grid(column=2)
+
+        self.merchandiseChoiceLabel = Label(master,text= "Will there be merchandise?")
+        self.merchandiseChoiceLabel.grid(column=2)
+        self.merchandiseChoiceYes = Radiobutton(master,text="Yes",variable=self.merchandise,value="Yes")
+        self.merchandiseChoiceYes.grid(column=2)
+        self.merchandiseChoiceNo = Radiobutton(master,text="No",variable=self.merchandise,value="No")
+        self.merchandiseChoiceNo.grid(column=2)
+
+
 
     def post(self):
         name = self.name.get()
@@ -132,12 +144,12 @@ class eventEntry:
         Firebase.patch(name,{"longitude": longitude})
         Firebase.patch(name,{"picture": picture})
         Firebase.patch(name,{"votes":0})
-        storage.child(category).put(self.picture.get())
+        storage.child(category+ "/"+"color"+ self.pictureName.get()).put(picture)
     def attachPicture(self):
         root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
-        self.picture.set(os.path.basename(root.filename))
+        self.pictureName.set(os.path.basename(root.filename))
         print(self.picture.get())
-        self.pictureEntry.insert(0,os.path.basename(root.filename))
+        self.pictureEntry.insert(0,root.filename)
 
 
 if __name__ == "__main__":
