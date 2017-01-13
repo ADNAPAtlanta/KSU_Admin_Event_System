@@ -134,6 +134,7 @@ class eventEntry:
         self.timeLabel.grid(column=2,row=4)
         self.timeEntry = Entry(master,textvariable=self.time, bd=3)
         self.timeEntry.grid(column=2,row=5)
+        #
 
 
 
