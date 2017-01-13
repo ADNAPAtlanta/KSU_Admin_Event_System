@@ -12,7 +12,7 @@ except ImportError:
     from tkinter import *
     from tkinter import filedialog
 
-categories = ["fun","academic","greek","networking","football"]
+categories = ["fun","academic","greek","networking","football","cultural"]
 
 config = {
   "apiKey": " AIzaSyCkLEL05gnfbuGaWYVlOmXbkZWb_95CYBE",
@@ -24,7 +24,7 @@ config = {
 firebasepyre = pyrebase.initialize_app(config)
 database = firebasepyre.database()
 storage = firebasepyre.storage()
-Firebase = firebase.FirebaseApplication("https://school-events-3b62e.firebaseio.com/")
+Firebase = firebase.FirebaseApplication("https://school-events-3b62e.firebaseio.com/Organizations")
 
 class eventEntry:
     def __init__(self,master):
@@ -36,6 +36,7 @@ class eventEntry:
         self.category.set("networking")
         self.date = StringVar()
         self.dateNum = IntVar()
+        self.time = StringVar()
         self.description = StringVar()
         self.shareMessage = StringVar()
         self.address = StringVar()
@@ -49,7 +50,9 @@ class eventEntry:
         self.longitude = StringVar()
         self.category = StringVar()
         self.picture = StringVar()
+        self.colorPicture = StringVar()
         self.pictureName = StringVar()
+        self.colorPictureName = StringVar()
 
         self.nameLabel = Label(master, text="name of Event",underline=0)
         self.nameLabel.grid(column=1)
@@ -92,33 +95,47 @@ class eventEntry:
 
         self.pictureLabel = Label(master,text="Attach picture")
         self.pictureLabel.grid(column=1)
+
         self.pictureEntry = Entry(master,textvariable=self.picture,bd=3)
         self.pictureEntry.grid(column=1)
+        self.colorPictureLabel = Label(master,text="Attach colored picture.")
+        self.colorPictureLabel.grid(column=1)
+        self.colorPictureEntry = Entry(master, textvariable=self.colorPicture, bd=3)
+        self.colorPictureEntry.grid(column=1)
         self.attachButton = Button(master, text="search", command=self.attachPicture)
         self.attachButton.grid(column=1)
+        self.colorAttach = Button(master, text="Attach color picture", command=self.attachColorPicture)
+        self.colorAttach.grid(column=1)
         self.submitButton = Button(master, text="Submit", command=self.post)
         self.submitButton.grid(column=1)
 
         self.foodChoiceLabel = Label(master, text="Is food available?",underline=0)
         self.foodChoiceLabel.grid(column=2,row=1)
         self.foodChoiceYes = Radiobutton(master, text="Yes", variable=self.food, value="Yes")
-        self.foodChoiceYes.grid(column=2)
+        self.foodChoiceYes.grid(column=2,row=2)
         self.foodChoiceNo = Radiobutton(master,text="No",variable=self.food,value="No")
-        self.foodChoiceNo.grid(column=2)
+        self.foodChoiceNo.grid(column=2,row=3)
 
         self.alcoholChoiceLabel = Label(master,text= "Will there be alcohol?")
-        self.alcoholChoiceLabel.grid(column=2)
+        self.alcoholChoiceLabel.grid(column=3,row=1)
         self.alcoholChoiceYes = Radiobutton(master,text="Yes",variable=self.alcohol,value="Yes")
-        self.alcoholChoiceYes.grid(column=2)
+        self.alcoholChoiceYes.grid(column=3,row=2)
         self.alcoholChoiceNo = Radiobutton(master,text="No",variable=self.alcohol,value="No")
-        self.alcoholChoiceNo.grid(column=2)
+        self.alcoholChoiceNo.grid(column=3,row=3)
 
         self.merchandiseChoiceLabel = Label(master,text= "Will there be merchandise?")
-        self.merchandiseChoiceLabel.grid(column=2)
+        self.merchandiseChoiceLabel.grid(column=4,row=1)
         self.merchandiseChoiceYes = Radiobutton(master,text="Yes",variable=self.merchandise,value="Yes")
-        self.merchandiseChoiceYes.grid(column=2)
+        self.merchandiseChoiceYes.grid(column=4,row=2)
         self.merchandiseChoiceNo = Radiobutton(master,text="No",variable=self.merchandise,value="No")
-        self.merchandiseChoiceNo.grid(column=2)
+        self.merchandiseChoiceNo.grid(column=4,row=3)
+
+        self.timeLabel = Label(master,text= "Enter time-range")
+        self.timeLabel.grid(column=2,row=4)
+        self.timeEntry = Entry(master,textvariable=self.time, bd=3)
+        self.timeEntry.grid(column=2,row=5)
+
+
 
 
 
@@ -153,10 +170,6 @@ class eventEntry:
         Firebase.patch(name,{"votes":0})
         Firebase.patch(name+"/"+"voters",{"placeholder":"voted"})
         storage.child(category+ "/"+"color"+ self.pictureName.get()).put(picture)
-    def attachPicture(self):
-        root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
-        self.pictureName.set(os.path.basename(root.filename))
-        print(self.picture.get())
         self.pictureEntry.insert(0,root.filename)
         self.nameEntry.delete(0, END)
         self.dateEntry.delete(0, END)
@@ -166,6 +179,15 @@ class eventEntry:
         self.latEntry.delete(0, END)
         self.longitudeEntry.delete(0, END)
         self.pictureEntry.delete(0, END)
+    def attachPicture(self):
+        root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
+        self.picture.set(os.path.basename(root.filename))
+        print(self.picture.get())
+    def attachColorPicture(self):
+        root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
+        self.colorPicture.set(os.path.basename(root.filename))
+        print(self.picture.get())
+
 
 
 if __name__ == "__main__":
