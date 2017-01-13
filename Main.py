@@ -110,10 +110,27 @@ class eventEntry:
         self.submitButton.grid(column=1)
 
         self.foodChoiceLabel = Label(master, text="Is food available?",underline=0)
-        self.foodChoiceLabel.grid(column=2,row=1)
+        self.foodChoiceLabel.grid(column=2, row=1)
         self.foodChoiceYes = Radiobutton(master, text="Yes", variable=self.food, value="Yes")
         self.foodChoiceYes.grid(column=2,row=2)
         self.foodChoiceNo = Radiobutton(master,text="No",variable=self.food,value="No")
+<<<<<<< HEAD
+        self.foodChoiceNo.grid(column=2, row=3)
+
+        self.musicChoiceLabel = Label(master,text= "Will there be music?")
+        self.musicChoiceLabel.grid(column=3, row=1)
+        self.musicChoiceYes = Radiobutton(master,text="Yes",variable=self.alcohol,value="Yes")
+        self.musicChoiceYes.grid(column=3, row=2)
+        self.musicChoiceNo = Radiobutton(master,text="No",variable=self.alcohol,value="No")
+        self.musicChoiceNo.grid(column=3, row=3)
+
+        self.merchandiseChoiceLabel = Label(master,text= "Will there be merchandise?")
+        self.merchandiseChoiceLabel.grid(column=4, row=1)
+        self.merchandiseChoiceYes = Radiobutton(master,text="Yes",variable=self.merchandise,value="Yes")
+        self.merchandiseChoiceYes.grid(column=4, row=2)
+        self.merchandiseChoiceNo = Radiobutton(master,text="No",variable=self.merchandise,value="No")
+        self.merchandiseChoiceNo.grid(column=4, row=3)
+=======
         self.foodChoiceNo.grid(column=2,row=3)
 
         self.alcoholChoiceLabel = Label(master,text= "Will there be alcohol?")
@@ -137,6 +154,7 @@ class eventEntry:
         #
 
 
+>>>>>>> origin/master
 
 
 
@@ -149,7 +167,7 @@ class eventEntry:
         shareMessage = self.shareMessage.get()
         address = self.address.get()
         food = self.food.get()
-        alcohol = self.alcohol.get()
+        music = self.music.get()
         merchandise = self.merchandise.get()
         lat = self.lat.get()
         longitude = self.longitude.get()
@@ -163,7 +181,7 @@ class eventEntry:
         Firebase.patch(name,{"shareMessage": shareMessage})
         Firebase.patch(name,{"address":address})
         Firebase.patch(name,{"food": food})
-        Firebase.patch(name,{"alcohol": alcohol})
+        Firebase.patch(name,{"music": music})
         Firebase.patch(name,{"merchandise": merchandise})
         Firebase.patch(name,{"lat": lat})
         Firebase.patch(name,{"longitude": longitude})
