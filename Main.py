@@ -114,7 +114,7 @@ class eventEntry:
         self.foodChoiceYes = Radiobutton(master, text="Yes", variable=self.food, value="Yes")
         self.foodChoiceYes.grid(column=2,row=2)
         self.foodChoiceNo = Radiobutton(master,text="No",variable=self.food,value="No")
-<<<<<<< HEAD
+
         self.foodChoiceNo.grid(column=2, row=3)
 
         self.musicChoiceLabel = Label(master,text= "Will there be music?")
@@ -130,7 +130,6 @@ class eventEntry:
         self.merchandiseChoiceYes.grid(column=4, row=2)
         self.merchandiseChoiceNo = Radiobutton(master,text="No",variable=self.merchandise,value="No")
         self.merchandiseChoiceNo.grid(column=4, row=3)
-=======
         self.foodChoiceNo.grid(column=2,row=3)
 
         self.alcoholChoiceLabel = Label(master,text= "Will there be alcohol?")
@@ -154,7 +153,7 @@ class eventEntry:
         #
 
 
->>>>>>> origin/master
+
 
 
 
