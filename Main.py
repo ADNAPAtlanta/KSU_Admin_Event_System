@@ -183,6 +183,7 @@ class eventEntry:
         merchandise = self.merchandise.get()
         lat = self.lat.get()
         longitude = self.longitude.get()
+        locationName = self.locationName.get()
         picture = self.pictureName.get()
         colorPicture = self.colorPictureName.get()
 
@@ -197,6 +198,7 @@ class eventEntry:
         Firebase.patch("/Events/" + name,{"food": food})
         Firebase.patch("/Events/" + name,{"music": music})
         Firebase.patch("/Events/" + name,{"merchandise": merchandise})
+        Firebase.patch("/Events" + name,{"location name": locationName})
         Firebase.patch("/Events/" + name,{"lat": lat})
         Firebase.patch("/Events/" + name,{"longitude": longitude})
         Firebase.patch("/Events/" + name,{"picture": picture})
