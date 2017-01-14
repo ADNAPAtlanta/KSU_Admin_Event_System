@@ -165,10 +165,6 @@ class eventEntry:
         #
 
 
-
-
-
-
     def post(self):
         name = self.name.get()
         organization = self.organization.get()
@@ -230,6 +226,7 @@ class eventEntry:
 
 if __name__ == "__main__":
     root = Tk()
+    root.resizable(width=False, height=False)
     GUI = eventEntry(root)
     root.mainloop()
 
