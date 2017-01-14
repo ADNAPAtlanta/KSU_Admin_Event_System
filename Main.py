@@ -50,6 +50,7 @@ class eventEntry:
         self.merchandise.set("No")
         self.lat = StringVar()
         self.longitude = StringVar()
+        self.locationName = StringVar()
         self.category = StringVar()
         self.picture = StringVar()
         self.colorPicture = StringVar()
@@ -85,6 +86,10 @@ class eventEntry:
         self.shareMessageEntry = Entry(master, textvariable=self.shareMessage, bd=3)
         self.shareMessageEntry.grid(column=1)
 
+        self.locationNameLabel = Label(master, text="Enter location name.", underline=0)
+        self.locationNameLabel.grid(column=2, row=6)
+        self.locationNameEntry = Entry(master, textvariable=self.locationName, bd=3)
+        self.locationNameEntry.grid(column=2, row=7)
         self.latLabel = Label(master, text="Enter Latitude", underline=0)
         self.latLabel.grid(column=1)
         self.latEntry = Entry(master, textvariable=self.lat, bd=3)
