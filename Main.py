@@ -12,19 +12,20 @@ except ImportError:
     from tkinter import *
     from tkinter import filedialog
 
-categories = ["fun","academic","greek","networking","football","cultural"]
+categories = ["fun","academic","greek","networking","ncaa","cultural","athletics"]
 
 config = {
   "apiKey": " AIzaSyCkLEL05gnfbuGaWYVlOmXbkZWb_95CYBE",
   "authDomain": "school-events-3b62e.firebaseapp.com",
-  "databaseURL": "https://school-events-3b62e.firebaseio.com/",
+  "databaseURL": "https://school-events-3b62e.firebaseio.com",
   "storageBucket": "school-events-3b62e.appspot.com",
 
 }
 firebasepyre = pyrebase.initialize_app(config)
 database = firebasepyre.database()
 storage = firebasepyre.storage()
-Firebase = firebase.FirebaseApplication("https://school-events-3b62e.firebaseio.com/Organizations")
+Firebase = firebase.FirebaseApplication("https://school-events-3b62e.firebaseio.com/", None)
+
 
 class eventEntry:
     def __init__(self,master):
@@ -32,6 +33,7 @@ class eventEntry:
         master.minsize(width=300, height=300)
 
         self.name = StringVar()
+        self.organization = StringVar()
         self.category = StringVar()
         self.category.set("networking")
         self.date = StringVar()
@@ -42,8 +44,8 @@ class eventEntry:
         self.address = StringVar()
         self.food = StringVar()
         self.food.set("No")
-        self.alcohol = StringVar()
-        self.alcohol.set("No")
+        self.music = StringVar()
+        self.music.set("No")
         self.merchandise = StringVar()
         self.merchandise.set("No")
         self.lat = StringVar()
@@ -58,6 +60,10 @@ class eventEntry:
         self.nameLabel.grid(column=1)
         self.nameEntry = Entry(master,textvariable=self.name,bd=3)
         self.nameEntry.grid(column=1)
+        self.organizationLabel = Label(master, text="Name of organization", underline=0)
+        self.organizationLabel.grid(column=1)
+        self.organizationEntry = Entry(master, textvariable=self.organization, bd=3)
+        self.organizationEntry.grid(column=1)
         self.categoryLabel = Label(master, text="Enter Category",underline=0)
         self.categoryLabel.grid(column=1)
         self.categoryOptions = OptionMenu(master,self.category,*categories)
@@ -74,7 +80,7 @@ class eventEntry:
         self.descriptionLabel.grid(column=1)
         self.descriptionEntry = Entry(master, textvariable=self.description, bd=3)
         self.descriptionEntry.grid(column=1 , rowspan=2)
-        self.shareMessageLabel = Label(master, textvariable=self.shareMessage, underline=0)
+        self.shareMessageLabel = Label(master, text="Enter share message", underline=0)
         self.shareMessageLabel.grid(column=1)
         self.shareMessageEntry = Entry(master, textvariable=self.shareMessage, bd=3)
         self.shareMessageEntry.grid(column=1)
@@ -114,14 +120,14 @@ class eventEntry:
         self.foodChoiceYes = Radiobutton(master, text="Yes", variable=self.food, value="Yes")
         self.foodChoiceYes.grid(column=2,row=2)
         self.foodChoiceNo = Radiobutton(master,text="No",variable=self.food,value="No")
-<<<<<<< HEAD
+
         self.foodChoiceNo.grid(column=2, row=3)
 
         self.musicChoiceLabel = Label(master,text= "Will there be music?")
         self.musicChoiceLabel.grid(column=3, row=1)
-        self.musicChoiceYes = Radiobutton(master,text="Yes",variable=self.alcohol,value="Yes")
+        self.musicChoiceYes = Radiobutton(master,text="Yes",variable=self.music,value="Yes")
         self.musicChoiceYes.grid(column=3, row=2)
-        self.musicChoiceNo = Radiobutton(master,text="No",variable=self.alcohol,value="No")
+        self.musicChoiceNo = Radiobutton(master,text="No",variable=self.music,value="No")
         self.musicChoiceNo.grid(column=3, row=3)
 
         self.merchandiseChoiceLabel = Label(master,text= "Will there be merchandise?")
@@ -130,14 +136,14 @@ class eventEntry:
         self.merchandiseChoiceYes.grid(column=4, row=2)
         self.merchandiseChoiceNo = Radiobutton(master,text="No",variable=self.merchandise,value="No")
         self.merchandiseChoiceNo.grid(column=4, row=3)
-=======
+
         self.foodChoiceNo.grid(column=2,row=3)
 
         self.alcoholChoiceLabel = Label(master,text= "Will there be alcohol?")
         self.alcoholChoiceLabel.grid(column=3,row=1)
-        self.alcoholChoiceYes = Radiobutton(master,text="Yes",variable=self.alcohol,value="Yes")
+        self.alcoholChoiceYes = Radiobutton(master,text="Yes",variable=self.music,value="Yes")
         self.alcoholChoiceYes.grid(column=3,row=2)
-        self.alcoholChoiceNo = Radiobutton(master,text="No",variable=self.alcohol,value="No")
+        self.alcoholChoiceNo = Radiobutton(master,text="No",variable=self.music,value="No")
         self.alcoholChoiceNo.grid(column=3,row=3)
 
         self.merchandiseChoiceLabel = Label(master,text= "Will there be merchandise?")
@@ -154,12 +160,13 @@ class eventEntry:
         #
 
 
->>>>>>> origin/master
+
 
 
 
     def post(self):
         name = self.name.get()
+        organization = self.organization.get()
         category = self.category.get()
         date = self.date.get()
         dateNum = self.dateNum.get()
@@ -171,24 +178,27 @@ class eventEntry:
         merchandise = self.merchandise.get()
         lat = self.lat.get()
         longitude = self.longitude.get()
-        picture = self.picture.get()
+        picture = self.pictureName.get()
+        colorPicture = self.colorPictureName.get()
 
-        Firebase.patch(name,{"name":name})
-        Firebase.patch(name,{"category":category})
-        Firebase.patch(name,{"date": date})
-        Firebase.patch(name,{"dateNum": dateNum})
-        Firebase.patch(name,{"description": description})
-        Firebase.patch(name,{"shareMessage": shareMessage})
-        Firebase.patch(name,{"address":address})
-        Firebase.patch(name,{"food": food})
-        Firebase.patch(name,{"music": music})
-        Firebase.patch(name,{"merchandise": merchandise})
-        Firebase.patch(name,{"lat": lat})
-        Firebase.patch(name,{"longitude": longitude})
-        Firebase.patch(name,{"picture": picture})
-        Firebase.patch(name,{"votes":0})
-        Firebase.patch(name+"/"+"voters",{"placeholder":"voted"})
-        storage.child(category+ "/"+"color"+ self.pictureName.get()).put(picture)
+        Firebase.patch("/Events/" + name,{"name":name})
+        Firebase.patch("/Events/" + name,{"organization":organization})
+        Firebase.patch("/Events/" + name,{"category":category})
+        Firebase.patch("/Events/" + name,{"date": date})
+        Firebase.patch("/Events/" + name,{"dateNum": dateNum})
+        Firebase.patch("/Events/" + name,{"description": description})
+        Firebase.patch("/Events/" + name,{"shareMessage": shareMessage})
+        Firebase.patch("/Events/" + name,{"address":address})
+        Firebase.patch("/Events/" + name,{"food": food})
+        Firebase.patch("/Events/" + name,{"music": music})
+        Firebase.patch("/Events/" + name,{"merchandise": merchandise})
+        Firebase.patch("/Events/" + name,{"lat": lat})
+        Firebase.patch("/Events/" + name,{"longitude": longitude})
+        Firebase.patch("/Events/" + name,{"picture": picture})
+        Firebase.patch("/Events/" + name,{"votes":0})
+        Firebase.patch("/Events/"+ name+"/"+"voters",{"placeholder":"voted"})
+        storage.child(category+ "/"+"color"+ self.colorPictureName.get()).put(self.colorPicture.get())
+        storage.child(category + "/" + self.pictureName.get()).put(self.picture.get())
         self.pictureEntry.insert(0,root.filename)
         self.nameEntry.delete(0, END)
         self.dateEntry.delete(0, END)
@@ -200,12 +210,14 @@ class eventEntry:
         self.pictureEntry.delete(0, END)
     def attachPicture(self):
         root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
-        self.picture.set(os.path.basename(root.filename))
+        self.pictureName.set(os.path.basename(root.filename))
+        self.pictureEntry.insert(0,root.filename)
         print(self.picture.get())
     def attachColorPicture(self):
         root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
-        self.colorPicture.set(os.path.basename(root.filename))
-        print(self.picture.get())
+        self.colorPictureName.set(os.path.basename(root.filename))
+        self.colorPictureEntry.insert(0,root.filename)
+        print(self.colorPictureName.get())
 
 
 
