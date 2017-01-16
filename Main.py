@@ -39,6 +39,8 @@ class eventEntry:
         self.date = StringVar()
         self.dateNum = IntVar()
         self.time = StringVar()
+        self.startTime = StringVar()
+        self.endTime = StringVar()
         self.description = StringVar()
         self.shareMessage = StringVar()
         self.address = StringVar()
@@ -158,10 +160,15 @@ class eventEntry:
         self.merchandiseChoiceNo = Radiobutton(master,text="No",variable=self.merchandise,value="No")
         self.merchandiseChoiceNo.grid(column=4,row=3)
 
-        self.timeLabel = Label(master,text= "Enter time-range")
-        self.timeLabel.grid(column=2,row=4)
-        self.timeEntry = Entry(master,textvariable=self.time, bd=3)
-        self.timeEntry.grid(column=2,row=5)
+        self.startTimeLabel = Label(master,text= "Enter start time.")
+        self.startTimeLabel.grid(column=2,row=4)
+        self.startTimeEntry = Entry(master,textvariable=self.startTime, bd=3)
+        self.startTimeEntry.grid(column=2,row=5)
+
+        self.endTimeLabel = Label(master, text= "Enter ending time.")
+        self.endTimeLabel.grid(column=3, row=4)
+        self.endTimeEntry = Entry(master, textvariable=self.endTime, bd=3)
+        self.endTimeEntry.grid(column=3, row=5)
         #
 
 
@@ -171,6 +178,8 @@ class eventEntry:
         category = self.category.get()
         date = self.date.get()
         dateNum = self.dateNum.get()
+        endTime = self.endTime.get()
+        startTime = self.startTime.get()
         description = self.description.get()
         shareMessage = self.shareMessage.get()
         address = self.address.get()
@@ -188,6 +197,8 @@ class eventEntry:
         Firebase.patch("/Events/" + name,{"category":category})
         Firebase.patch("/Events/" + name,{"date": date})
         Firebase.patch("/Events/" + name,{"dateNum": dateNum})
+        Firebase.patch("/Events/" + name,{"endTime": endTime})
+        Firebase.patch("/Events" + name,{"startTime": startTime})
         Firebase.patch("/Events/" + name,{"description": description})
         Firebase.patch("/Events/" + name,{"shareMessage": shareMessage})
         Firebase.patch("/Events/" + name,{"address":address})
