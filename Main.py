@@ -26,6 +26,8 @@ database = firebasepyre.database()
 storage = firebasepyre.storage()
 Firebase = firebase.FirebaseApplication("https://school-events-3b62e.firebaseio.com/", None)
 
+pmAMList = ["PM","AM"]
+
 
 class eventEntry:
     def __init__(self,master):
@@ -41,6 +43,8 @@ class eventEntry:
         self.time = StringVar()
         self.startTime = StringVar()
         self.endTime = StringVar()
+        self.pmAM = StringVar()
+        self.pmAM.set("AM")
         self.description = StringVar()
         self.shareMessage = StringVar()
         self.address = StringVar()
@@ -160,15 +164,20 @@ class eventEntry:
         self.merchandiseChoiceNo = Radiobutton(master,text="No",variable=self.merchandise,value="No")
         self.merchandiseChoiceNo.grid(column=4,row=3)
 
+        self.pmAMLabel = Label(master, text="PM/AM", underline=0)
+        self.pmAMLabel.grid(column=2, row=4)
+        self.pmAMOption = OptionMenu(master,self.pmAM,*pmAMList)
+        self.pmAMOption.grid(column=2,row=5)
+
         self.startTimeLabel = Label(master,text= "Enter start time.")
-        self.startTimeLabel.grid(column=2,row=4)
+        self.startTimeLabel.grid(column=3,row=4)
         self.startTimeEntry = Entry(master,textvariable=self.startTime, bd=3)
-        self.startTimeEntry.grid(column=2,row=5)
+        self.startTimeEntry.grid(column=3,row=5)
 
         self.endTimeLabel = Label(master, text= "Enter ending time.")
-        self.endTimeLabel.grid(column=3, row=4)
+        self.endTimeLabel.grid(column=4, row=4)
         self.endTimeEntry = Entry(master, textvariable=self.endTime, bd=3)
-        self.endTimeEntry.grid(column=3, row=5)
+        self.endTimeEntry.grid(column=4, row=5)
         #
 
 
@@ -180,6 +189,7 @@ class eventEntry:
         dateNum = self.dateNum.get()
         endTime = self.endTime.get()
         startTime = self.startTime.get()
+        pmAM = self.pmAM.get()
         description = self.description.get()
         shareMessage = self.shareMessage.get()
         address = self.address.get()
@@ -199,6 +209,7 @@ class eventEntry:
         Firebase.patch("/Events/" + name,{"dateNum": dateNum})
         Firebase.patch("/Events/" + name,{"endTime": endTime})
         Firebase.patch("/Events/" + name,{"startTime": startTime})
+        Firebase.patch("/Events" + name,{"pmAM": pmAM})
         Firebase.patch("/Events/" + name,{"description": description})
         Firebase.patch("/Events/" + name,{"shareMessage": shareMessage})
         Firebase.patch("/Events/" + name,{"address":address})
