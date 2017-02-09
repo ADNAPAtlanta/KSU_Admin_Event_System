@@ -12,7 +12,7 @@ except ImportError:
     from tkinter import *
     from tkinter import filedialog
 
-categories = ["fun","academic","greek","networking","ncaa","cultural","athletics"]
+categories = ["fun","academic","greek","networking","ncaa","cultural","athletics","service"]
 
 config = {
   "apiKey": " AIzaSyCkLEL05gnfbuGaWYVlOmXbkZWb_95CYBE",
