@@ -2,6 +2,8 @@
 import pyrebase
 from firebase import firebase
 import os
+from geopy.geocoders import Nominatim
+from geopy.geocoders import GoogleV3
 
 try:
     # for Python2
@@ -44,6 +46,8 @@ class eventEntry:
         self.startTime = StringVar()
         self.endTime = StringVar()
         self.pmAM = StringVar()
+        self.pmAMEnding = StringVar()
+        self.pmAMEnding.set("PM")
         self.pmAM.set("AM")
         self.description = StringVar()
         self.shareMessage = StringVar()
@@ -61,7 +65,7 @@ class eventEntry:
         self.picture = StringVar()
         self.colorPicture = StringVar()
         self.pictureName = StringVar()
-        self.colorPictureName = StringVar()
+   
 
         self.nameLabel = Label(master, text="name of Event",underline=0)
         self.nameLabel.grid(column=1)
@@ -115,14 +119,8 @@ class eventEntry:
 
         self.pictureEntry = Entry(master,textvariable=self.picture,bd=3)
         self.pictureEntry.grid(column=1)
-        self.colorPictureLabel = Label(master,text="Attach colored picture.")
-        self.colorPictureLabel.grid(column=1)
-        self.colorPictureEntry = Entry(master, textvariable=self.colorPicture, bd=3)
-        self.colorPictureEntry.grid(column=1)
         self.attachButton = Button(master, text="search", command=self.attachPicture)
         self.attachButton.grid(column=1)
-        self.colorAttach = Button(master, text="Attach color picture", command=self.attachColorPicture)
-        self.colorAttach.grid(column=1)
         self.submitButton = Button(master, text="Submit", command=self.post)
         self.submitButton.grid(column=1)
 
@@ -169,15 +167,20 @@ class eventEntry:
         self.pmAMOption = OptionMenu(master,self.pmAM,*pmAMList)
         self.pmAMOption.grid(column=2,row=5)
 
+        self.pmAMEndingLabel = Label(master,text="ending AM/PM.", underline=0)
+        self.pmAMEndingLabel.grid(column=3,row=4)
+        self.pmAMEndingOption = OptionMenu(master,self.pmAMEnding,*pmAMList)
+        self.pmAMEndingOption.grid(column=3,row=5)
+
         self.startTimeLabel = Label(master,text= "Enter start time.")
-        self.startTimeLabel.grid(column=3,row=4)
+        self.startTimeLabel.grid(column=4,row=4)
         self.startTimeEntry = Entry(master,textvariable=self.startTime, bd=3)
-        self.startTimeEntry.grid(column=3,row=5)
+        self.startTimeEntry.grid(column=4,row=5)
 
         self.endTimeLabel = Label(master, text= "Enter ending time.")
-        self.endTimeLabel.grid(column=4, row=4)
+        self.endTimeLabel.grid(column=5, row=4)
         self.endTimeEntry = Entry(master, textvariable=self.endTime, bd=3)
-        self.endTimeEntry.grid(column=4, row=5)
+        self.endTimeEntry.grid(column=5, row=5)
         #
 
 
@@ -190,6 +193,7 @@ class eventEntry:
         endTime = self.endTime.get()
         startTime = self.startTime.get()
         pmAM = self.pmAM.get()
+        pmAMEnding = self.pmAMEnding.get()
         description = self.description.get()
         shareMessage = self.shareMessage.get()
         address = self.address.get()
@@ -200,16 +204,17 @@ class eventEntry:
         longitude = self.longitude.get()
         locationName = self.locationName.get()
         picture = self.pictureName.get()
-        colorPicture = self.colorPictureName.get()
+       
 
         Firebase.patch("/" + category + "/" + name,{"name":name})
-        Firebase.patch("/"+category+"/" + name,{"organization":organization})
-        Firebase.patch("/"+category+"/" + name,{"category":category})
-        Firebase.patch("/"+category+"/" + name,{"date": date})
+        Firebase.patch("/"+category+ "/" + name,{"organization":organization})
+        Firebase.patch("/"+category+ "/" + name,{"category":category})
+        Firebase.patch("/"+category+ "/" + name,{"date": date})
         Firebase.patch("/" +category+ "/" + name,{"dateNum": dateNum})
-        Firebase.patch("/"+category+"/" + name,{"endTime": endTime})
-        Firebase.patch("/"+category+"/" + name,{"startTime": startTime})
-        Firebase.patch("/"+category+"/" + name,{"pmAM": pmAM})
+        Firebase.patch("/"+category+ "/" + name,{"endTime": endTime})
+        Firebase.patch("/"+category+ "/" + name,{"startTime": startTime})
+        Firebase.patch("/"+category+ "/" + name,{"pmAMEnding": pmAMEnding})
+        Firebase.patch("/"+category+ "/" + name,{"pmAM": pmAM})
         Firebase.patch("/" +category+ "/" + name,{"description": description})
         Firebase.patch("/" +category+ "/" + name,{"shareMessage": shareMessage})
         Firebase.patch("/" +category+ "/" + name,{"address":address})
@@ -220,7 +225,6 @@ class eventEntry:
         Firebase.patch("/" +category+ "/" + name,{"lat": r"" +lat + r""})
         Firebase.patch("/" +category+ "/" + name,{"longitude": r"" +longitude + r""})
         Firebase.patch("/" +category+ "/" + name,{"picture": picture})
-        Firebase.patch("/" +category+ "/" + name,{"colorPicture": colorPicture})
         Firebase.patch("/" +category+ "/" + name,{"votes":0})
         Firebase.patch("/" +category+ "/"+ name+"/"+"voters",{"placeholder":"voted"})
 
@@ -232,6 +236,7 @@ class eventEntry:
         Firebase.patch("/Events/" + name,{"endTime": endTime})
         Firebase.patch("/Events/" + name,{"startTime": startTime})
         Firebase.patch("/Events/" + name,{"pmAM": pmAM})
+        Firebase.patch("/Events/" + name,{"pmAMEnding": pmAMEnding})
         Firebase.patch("/Events/" + name,{"description": description})
         Firebase.patch("/Events/" + name,{"shareMessage": shareMessage})
         Firebase.patch("/Events/" + name,{"address":address})
@@ -242,10 +247,8 @@ class eventEntry:
         Firebase.patch("/Events/" + name,{"lat": r"" +lat + r""})
         Firebase.patch("/Events/" + name,{"longitude": r"" +longitude + r""})
         Firebase.patch("/Events/" + name,{"picture": picture})
-        Firebase.patch("/Events/" + name,{"colorPicture": colorPicture})
         Firebase.patch("/Events/" + name,{"votes":0})
         Firebase.patch("/Events/"+ name+"/"+"voters",{"placeholder":"voted"})
-        storage.child(category+ "/"+ self.colorPictureName.get()).put(self.colorPicture.get())
         storage.child(category + "/" + self.pictureName.get()).put(self.picture.get())
         self.pictureEntry.insert(0,root.filename)
         self.nameEntry.delete(0, END)
