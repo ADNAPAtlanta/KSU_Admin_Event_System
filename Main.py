@@ -14,7 +14,7 @@ except ImportError:
     from tkinter import *
     from tkinter import filedialog
 
-categories = ["fun","academic","greek","networking","ncaa","cultural","athletics","service"]
+categories = ["fun","academic","greek","networking","ncaa","cultural","athletics","service","social"]
 
 config = {
   "apiKey": " AIzaSyCkLEL05gnfbuGaWYVlOmXbkZWb_95CYBE",
@@ -38,6 +38,7 @@ class eventEntry:
 
         self.name = StringVar()
         self.organization = StringVar()
+        self.organizationWebsite = StringVar()
         self.category = StringVar()
         self.category.set("networking")
         self.date = StringVar()
@@ -75,11 +76,17 @@ class eventEntry:
         self.organizationLabel.grid(column=1)
         self.organizationEntry = Entry(master, textvariable=self.organization, bd=3)
         self.organizationEntry.grid(column=1)
+        self.organizationWebsiteLabel = Label(master, text="Organization website.", underline=0)
+        self.organizationWebsiteLabel.grid(column=1)
+        self.organizationWebsiteEntry = Entry(master, textvariable=self.organizationWebsite, bd=3)
+        self.organizationWebsiteEntry.grid(column=1)
+        
+        
         self.categoryLabel = Label(master, text="Enter Category",underline=0)
         self.categoryLabel.grid(column=1)
         self.categoryOptions = OptionMenu(master,self.category,*categories)
         self.categoryOptions.grid(column=1)
-        self.dateLabel = Label(master,text="Enter Date",underline=0)
+        self.dateLabel = Label(master,text="Enter Date mm/dd/yyyy",underline=0)
         self.dateLabel.grid(column=1)
         self.dateEntry = Entry(master,textvariable=self.date,bd=3)
         self.dateEntry.grid(column=1)
@@ -172,12 +179,12 @@ class eventEntry:
         self.pmAMEndingOption = OptionMenu(master,self.pmAMEnding,*pmAMList)
         self.pmAMEndingOption.grid(column=3,row=5)
 
-        self.startTimeLabel = Label(master,text= "Enter start time.")
+        self.startTimeLabel = Label(master,text= "Enter start time. 00:00")
         self.startTimeLabel.grid(column=4,row=4)
         self.startTimeEntry = Entry(master,textvariable=self.startTime, bd=3)
         self.startTimeEntry.grid(column=4,row=5)
 
-        self.endTimeLabel = Label(master, text= "Enter ending time.")
+        self.endTimeLabel = Label(master, text= "Enter ending time. 00:00")
         self.endTimeLabel.grid(column=5, row=4)
         self.endTimeEntry = Entry(master, textvariable=self.endTime, bd=3)
         self.endTimeEntry.grid(column=5, row=5)
@@ -187,6 +194,7 @@ class eventEntry:
     def post(self):
         name = self.name.get()
         organization = self.organization.get()
+        organizationWebsite = self.orgranizationWebsite.get()
         category = self.category.get()
         date = self.date.get()
         dateNum = self.dateNum.get()
@@ -206,8 +214,9 @@ class eventEntry:
         picture = self.pictureName.get()
        
 
-        Firebase.patch("/" + category + "/" + name,{"name":name})
+        Firebase.patch("/" +category + "/" + name,{"name":name})
         Firebase.patch("/"+category+ "/" + name,{"organization":organization})
+        Firebase.patch("/"+category+ "/" + name,{"organizationWebsite":organizationWebsite})
         Firebase.patch("/"+category+ "/" + name,{"category":category})
         Firebase.patch("/"+category+ "/" + name,{"date": date})
         Firebase.patch("/" +category+ "/" + name,{"dateNum": dateNum})
@@ -230,6 +239,7 @@ class eventEntry:
 
         Firebase.patch("/Events/" + name,{"name":name})
         Firebase.patch("/Events/" + name,{"organization":organization})
+        Firebase.patch("/Events/" + name,{"organizationWebsite":organizationWebsite})
         Firebase.patch("/Events/" + name,{"category":category})
         Firebase.patch("/Events/" + name,{"date": date})
         Firebase.patch("/Events/" + name,{"dateNum": dateNum})
