@@ -14,7 +14,7 @@ except ImportError:
     from tkinter import *
     from tkinter import filedialog
 
-categories = ["fun","academic","greek","networking","ncaa","cultural","athletics","service","social"]
+categories = ["fun","academic","greek","networking","ncaa","arts&cultural","athletics","service","social"]
 
 config = {
   "apiKey": " AIzaSyCkLEL05gnfbuGaWYVlOmXbkZWb_95CYBE",
@@ -59,6 +59,8 @@ class eventEntry:
         self.music.set("No")
         self.merchandise = StringVar()
         self.merchandise.set("No")
+        self.featured = StringVar()
+        self.featured.set("No")
         self.lat = StringVar()
         self.longitude = StringVar()
         self.locationName = StringVar()
@@ -169,6 +171,13 @@ class eventEntry:
         self.merchandiseChoiceNo = Radiobutton(master,text="No",variable=self.merchandise,value="No")
         self.merchandiseChoiceNo.grid(column=4,row=3)
 
+        self.featuredLabel = Label(master, text="Is the event featured?")
+        self.featuredLabel.grid(column=5,row=1)
+        self.featuredYes = Radiobutton(master,text="Yes",variable=self.featured,value="Yes")
+        self.featuredYes.grid(column=5,row=2)
+        self.featuredNo = Radiobutton(master,text="No",variable=self.featured,value="No")
+        self.featuredNo.grid(column=5,row=3)
+
         self.pmAMLabel = Label(master, text="PM/AM", underline=0)
         self.pmAMLabel.grid(column=2, row=4)
         self.pmAMOption = OptionMenu(master,self.pmAM,*pmAMList)
@@ -194,7 +203,7 @@ class eventEntry:
     def post(self):
         name = self.name.get()
         organization = self.organization.get()
-        organizationWebsite = self.orgranizationWebsite.get()
+        organizationWebsite = self.organizationWebsite.get()
         category = self.category.get()
         date = self.date.get()
         dateNum = self.dateNum.get()
@@ -208,6 +217,7 @@ class eventEntry:
         food = self.food.get()
         music = self.music.get()
         merchandise = self.merchandise.get()
+        featured = self.featured.get()
         lat = self.lat.get()
         longitude = self.longitude.get()
         locationName = self.locationName.get()
@@ -230,7 +240,7 @@ class eventEntry:
         Firebase.patch("/" +category+ "/" + name,{"food": food})
         Firebase.patch("/" +category+ "/" + name,{"music": music})
         Firebase.patch("/" +category+ "/" + name,{"merchandise": merchandise})
-        Firebase.patch("/" +category+ "/" + name,{"location name": locationName})
+        Firebase.patch("/" +category+ "/" + name,{"locationName": locationName})
         Firebase.patch("/" +category+ "/" + name,{"lat": r"" +lat + r""})
         Firebase.patch("/" +category+ "/" + name,{"longitude": r"" +longitude + r""})
         Firebase.patch("/" +category+ "/" + name,{"picture": picture})
@@ -253,12 +263,37 @@ class eventEntry:
         Firebase.patch("/Events/" + name,{"food": food})
         Firebase.patch("/Events/" + name,{"music": music})
         Firebase.patch("/Events/" + name,{"merchandise": merchandise})
-        Firebase.patch("/Events/" + name,{"location name": locationName})
+        Firebase.patch("/Events/" + name,{"locationName": locationName})
         Firebase.patch("/Events/" + name,{"lat": r"" +lat + r""})
         Firebase.patch("/Events/" + name,{"longitude": r"" +longitude + r""})
         Firebase.patch("/Events/" + name,{"picture": picture})
         Firebase.patch("/Events/" + name,{"votes":0})
         Firebase.patch("/Events/"+ name+"/"+"voters",{"placeholder":"voted"})
+        if featured == "Yes":
+            Firebase.patch("/Featured/" + name,{"name":name})
+            Firebase.patch("/Featured/" + name,{"organization":organization})
+            Firebase.patch("/Featured/" + name,{"organizationWebsite":organizationWebsite})
+            Firebase.patch("/Featured/" + name,{"category":category})
+            Firebase.patch("/Featured/" + name,{"date": date})
+            Firebase.patch("/Featured/" + name,{"dateNum": dateNum})
+            Firebase.patch("/Featured/" + name,{"endTime": endTime})
+            Firebase.patch("/Featured/" + name,{"startTime": startTime})
+            Firebase.patch("/Featured/" + name,{"pmAM": pmAM})
+            Firebase.patch("/Featured/" + name,{"pmAMEnding": pmAMEnding})
+            Firebase.patch("/Featured/" + name,{"description": description})
+            Firebase.patch("/Featured/" + name,{"shareMessage": shareMessage})
+            Firebase.patch("/Featured/" + name,{"address":address})
+            Firebase.patch("/Featured/" + name,{"food": food})
+            Firebase.patch("/Featured/" + name,{"music": music})
+            Firebase.patch("/Featured/" + name,{"merchandise": merchandise})
+            Firebase.patch("/Featured/" + name,{"locationName": locationName})
+            Firebase.patch("/Featured/" + name,{"lat": r"" +lat + r""})
+            Firebase.patch("/Featured/" + name,{"longitude": r"" +longitude + r""})
+            Firebase.patch("/Featured/" + name,{"picture": picture})
+            Firebase.patch("/Featured/" + name,{"votes":0})
+            Firebase.patch("/Featured/"+ name+"/"+"voters",{"placeholder":"voted"})
+
+            
         storage.child(category + "/" + self.pictureName.get()).put(self.picture.get())
         self.pictureEntry.insert(0,root.filename)
         self.nameEntry.delete(0, END)
@@ -266,11 +301,14 @@ class eventEntry:
         self.descriptionEntry.delete(0, END)
         self.shareMessageEntry.delete(0,END)
         self.addressEntry.delete(0, END)
+        self.locationNameEntry.delete(0, END)
         self.latEntry.delete(0, END)
         self.longitudeEntry.delete(0, END)
         self.pictureEntry.delete(0, END)
-        self.colorPictureEntry.delete(0, END)
         self.dateNumEntry.delete(0, END)
+        self.startTimeEntry.delete(0, END)
+        self.endTimeEntry.delete(0, END)
+    
     def attachPicture(self):
         root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
         self.pictureName.set(os.path.basename(root.filename))
