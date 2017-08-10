@@ -2,6 +2,8 @@
 import pyrebase
 from firebase import firebase
 import os
+from geopy.geocoders import Nominatim
+from geopy.geocoders import GoogleV3
 
 try:
     # for Python2
@@ -12,7 +14,7 @@ except ImportError:
     from tkinter import *
     from tkinter import filedialog
 
-categories = ["fun","academic","greek","networking","ncaa","cultural","athletics","service"]
+categories = ["fun","academic","greek","networking","ncaa","arts&cultural","athletics","service","social"]
 
 config = {
   "apiKey": " AIzaSyCkLEL05gnfbuGaWYVlOmXbkZWb_95CYBE",
@@ -36,6 +38,7 @@ class eventEntry:
 
         self.name = StringVar()
         self.organization = StringVar()
+        self.organizationWebsite = StringVar()
         self.category = StringVar()
         self.category.set("networking")
         self.date = StringVar()
@@ -44,6 +47,8 @@ class eventEntry:
         self.startTime = StringVar()
         self.endTime = StringVar()
         self.pmAM = StringVar()
+        self.pmAMEnding = StringVar()
+        self.pmAMEnding.set("PM")
         self.pmAM.set("AM")
         self.description = StringVar()
         self.shareMessage = StringVar()
@@ -54,6 +59,8 @@ class eventEntry:
         self.music.set("No")
         self.merchandise = StringVar()
         self.merchandise.set("No")
+        self.featured = StringVar()
+        self.featured.set("No")
         self.lat = StringVar()
         self.longitude = StringVar()
         self.locationName = StringVar()
@@ -61,7 +68,7 @@ class eventEntry:
         self.picture = StringVar()
         self.colorPicture = StringVar()
         self.pictureName = StringVar()
-        self.colorPictureName = StringVar()
+   
 
         self.nameLabel = Label(master, text="name of Event",underline=0)
         self.nameLabel.grid(column=1)
@@ -71,11 +78,17 @@ class eventEntry:
         self.organizationLabel.grid(column=1)
         self.organizationEntry = Entry(master, textvariable=self.organization, bd=3)
         self.organizationEntry.grid(column=1)
+        self.organizationWebsiteLabel = Label(master, text="Organization website.", underline=0)
+        self.organizationWebsiteLabel.grid(column=1)
+        self.organizationWebsiteEntry = Entry(master, textvariable=self.organizationWebsite, bd=3)
+        self.organizationWebsiteEntry.grid(column=1)
+        
+        
         self.categoryLabel = Label(master, text="Enter Category",underline=0)
         self.categoryLabel.grid(column=1)
         self.categoryOptions = OptionMenu(master,self.category,*categories)
         self.categoryOptions.grid(column=1)
-        self.dateLabel = Label(master,text="Enter Date",underline=0)
+        self.dateLabel = Label(master,text="Enter Date mm/dd/yyyy",underline=0)
         self.dateLabel.grid(column=1)
         self.dateEntry = Entry(master,textvariable=self.date,bd=3)
         self.dateEntry.grid(column=1)
@@ -115,14 +128,8 @@ class eventEntry:
 
         self.pictureEntry = Entry(master,textvariable=self.picture,bd=3)
         self.pictureEntry.grid(column=1)
-        self.colorPictureLabel = Label(master,text="Attach colored picture.")
-        self.colorPictureLabel.grid(column=1)
-        self.colorPictureEntry = Entry(master, textvariable=self.colorPicture, bd=3)
-        self.colorPictureEntry.grid(column=1)
         self.attachButton = Button(master, text="search", command=self.attachPicture)
         self.attachButton.grid(column=1)
-        self.colorAttach = Button(master, text="Attach color picture", command=self.attachColorPicture)
-        self.colorAttach.grid(column=1)
         self.submitButton = Button(master, text="Submit", command=self.post)
         self.submitButton.grid(column=1)
 
@@ -164,88 +171,129 @@ class eventEntry:
         self.merchandiseChoiceNo = Radiobutton(master,text="No",variable=self.merchandise,value="No")
         self.merchandiseChoiceNo.grid(column=4,row=3)
 
+        self.featuredLabel = Label(master, text="Is the event featured?")
+        self.featuredLabel.grid(column=5,row=1)
+        self.featuredYes = Radiobutton(master,text="Yes",variable=self.featured,value="Yes")
+        self.featuredYes.grid(column=5,row=2)
+        self.featuredNo = Radiobutton(master,text="No",variable=self.featured,value="No")
+        self.featuredNo.grid(column=5,row=3)
+
         self.pmAMLabel = Label(master, text="PM/AM", underline=0)
         self.pmAMLabel.grid(column=2, row=4)
         self.pmAMOption = OptionMenu(master,self.pmAM,*pmAMList)
         self.pmAMOption.grid(column=2,row=5)
 
-        self.startTimeLabel = Label(master,text= "Enter start time.")
-        self.startTimeLabel.grid(column=3,row=4)
-        self.startTimeEntry = Entry(master,textvariable=self.startTime, bd=3)
-        self.startTimeEntry.grid(column=3,row=5)
+        self.pmAMEndingLabel = Label(master,text="ending AM/PM.", underline=0)
+        self.pmAMEndingLabel.grid(column=3,row=4)
+        self.pmAMEndingOption = OptionMenu(master,self.pmAMEnding,*pmAMList)
+        self.pmAMEndingOption.grid(column=3,row=5)
 
-        self.endTimeLabel = Label(master, text= "Enter ending time.")
-        self.endTimeLabel.grid(column=4, row=4)
+        self.startTimeLabel = Label(master,text= "Enter start time. 00:00")
+        self.startTimeLabel.grid(column=4,row=4)
+        self.startTimeEntry = Entry(master,textvariable=self.startTime, bd=3)
+        self.startTimeEntry.grid(column=4,row=5)
+
+        self.endTimeLabel = Label(master, text= "Enter ending time. 00:00")
+        self.endTimeLabel.grid(column=5, row=4)
         self.endTimeEntry = Entry(master, textvariable=self.endTime, bd=3)
-        self.endTimeEntry.grid(column=4, row=5)
+        self.endTimeEntry.grid(column=5, row=5)
         #
 
 
     def post(self):
         name = self.name.get()
         organization = self.organization.get()
+        organizationWebsite = self.organizationWebsite.get()
         category = self.category.get()
         date = self.date.get()
         dateNum = self.dateNum.get()
         endTime = self.endTime.get()
         startTime = self.startTime.get()
         pmAM = self.pmAM.get()
+        pmAMEnding = self.pmAMEnding.get()
         description = self.description.get()
         shareMessage = self.shareMessage.get()
         address = self.address.get()
         food = self.food.get()
         music = self.music.get()
         merchandise = self.merchandise.get()
+        featured = self.featured.get()
         lat = self.lat.get()
         longitude = self.longitude.get()
         locationName = self.locationName.get()
         picture = self.pictureName.get()
-        colorPicture = self.colorPictureName.get()
+       
 
-        Firebase.patch("/" + category + "/" + name,{"name":name})
-        Firebase.patch("/"+category+"/" + name,{"organization":organization})
-        Firebase.patch("/"+category+"/" + name,{"category":category})
-        Firebase.patch("/"+category+"/" + name,{"date": date})
+        Firebase.patch("/" +category + "/" + name,{"name":name})
+        Firebase.patch("/"+category+ "/" + name,{"organization":organization})
+        Firebase.patch("/"+category+ "/" + name,{"organizationWebsite":organizationWebsite})
+        Firebase.patch("/"+category+ "/" + name,{"category":category})
+        Firebase.patch("/"+category+ "/" + name,{"date": date})
         Firebase.patch("/" +category+ "/" + name,{"dateNum": dateNum})
-        Firebase.patch("/"+category+"/" + name,{"endTime": endTime})
-        Firebase.patch("/"+category+"/" + name,{"startTime": startTime})
-        Firebase.patch("/"+category+"/" + name,{"pmAM": pmAM})
+        Firebase.patch("/"+category+ "/" + name,{"endTime": endTime})
+        Firebase.patch("/"+category+ "/" + name,{"startTime": startTime})
+        Firebase.patch("/"+category+ "/" + name,{"pmAMEnding": pmAMEnding})
+        Firebase.patch("/"+category+ "/" + name,{"pmAM": pmAM})
         Firebase.patch("/" +category+ "/" + name,{"description": description})
         Firebase.patch("/" +category+ "/" + name,{"shareMessage": shareMessage})
         Firebase.patch("/" +category+ "/" + name,{"address":address})
         Firebase.patch("/" +category+ "/" + name,{"food": food})
         Firebase.patch("/" +category+ "/" + name,{"music": music})
         Firebase.patch("/" +category+ "/" + name,{"merchandise": merchandise})
-        Firebase.patch("/" +category+ "/" + name,{"location name": locationName})
+        Firebase.patch("/" +category+ "/" + name,{"locationName": locationName})
         Firebase.patch("/" +category+ "/" + name,{"lat": r"" +lat + r""})
         Firebase.patch("/" +category+ "/" + name,{"longitude": r"" +longitude + r""})
         Firebase.patch("/" +category+ "/" + name,{"picture": picture})
-        Firebase.patch("/" +category+ "/" + name,{"colorPicture": colorPicture})
         Firebase.patch("/" +category+ "/" + name,{"votes":0})
         Firebase.patch("/" +category+ "/"+ name+"/"+"voters",{"placeholder":"voted"})
 
         Firebase.patch("/Events/" + name,{"name":name})
         Firebase.patch("/Events/" + name,{"organization":organization})
+        Firebase.patch("/Events/" + name,{"organizationWebsite":organizationWebsite})
         Firebase.patch("/Events/" + name,{"category":category})
         Firebase.patch("/Events/" + name,{"date": date})
         Firebase.patch("/Events/" + name,{"dateNum": dateNum})
         Firebase.patch("/Events/" + name,{"endTime": endTime})
         Firebase.patch("/Events/" + name,{"startTime": startTime})
         Firebase.patch("/Events/" + name,{"pmAM": pmAM})
+        Firebase.patch("/Events/" + name,{"pmAMEnding": pmAMEnding})
         Firebase.patch("/Events/" + name,{"description": description})
         Firebase.patch("/Events/" + name,{"shareMessage": shareMessage})
         Firebase.patch("/Events/" + name,{"address":address})
         Firebase.patch("/Events/" + name,{"food": food})
         Firebase.patch("/Events/" + name,{"music": music})
         Firebase.patch("/Events/" + name,{"merchandise": merchandise})
-        Firebase.patch("/Events/" + name,{"location name": locationName})
+        Firebase.patch("/Events/" + name,{"locationName": locationName})
         Firebase.patch("/Events/" + name,{"lat": r"" +lat + r""})
         Firebase.patch("/Events/" + name,{"longitude": r"" +longitude + r""})
         Firebase.patch("/Events/" + name,{"picture": picture})
-        Firebase.patch("/Events/" + name,{"colorPicture": colorPicture})
         Firebase.patch("/Events/" + name,{"votes":0})
         Firebase.patch("/Events/"+ name+"/"+"voters",{"placeholder":"voted"})
-        storage.child(category+ "/"+ self.colorPictureName.get()).put(self.colorPicture.get())
+        if featured == "Yes":
+            Firebase.patch("/Featured/" + name,{"name":name})
+            Firebase.patch("/Featured/" + name,{"organization":organization})
+            Firebase.patch("/Featured/" + name,{"organizationWebsite":organizationWebsite})
+            Firebase.patch("/Featured/" + name,{"category":category})
+            Firebase.patch("/Featured/" + name,{"date": date})
+            Firebase.patch("/Featured/" + name,{"dateNum": dateNum})
+            Firebase.patch("/Featured/" + name,{"endTime": endTime})
+            Firebase.patch("/Featured/" + name,{"startTime": startTime})
+            Firebase.patch("/Featured/" + name,{"pmAM": pmAM})
+            Firebase.patch("/Featured/" + name,{"pmAMEnding": pmAMEnding})
+            Firebase.patch("/Featured/" + name,{"description": description})
+            Firebase.patch("/Featured/" + name,{"shareMessage": shareMessage})
+            Firebase.patch("/Featured/" + name,{"address":address})
+            Firebase.patch("/Featured/" + name,{"food": food})
+            Firebase.patch("/Featured/" + name,{"music": music})
+            Firebase.patch("/Featured/" + name,{"merchandise": merchandise})
+            Firebase.patch("/Featured/" + name,{"locationName": locationName})
+            Firebase.patch("/Featured/" + name,{"lat": r"" +lat + r""})
+            Firebase.patch("/Featured/" + name,{"longitude": r"" +longitude + r""})
+            Firebase.patch("/Featured/" + name,{"picture": picture})
+            Firebase.patch("/Featured/" + name,{"votes":0})
+            Firebase.patch("/Featured/"+ name+"/"+"voters",{"placeholder":"voted"})
+
+            
         storage.child(category + "/" + self.pictureName.get()).put(self.picture.get())
         self.pictureEntry.insert(0,root.filename)
         self.nameEntry.delete(0, END)
@@ -253,11 +301,14 @@ class eventEntry:
         self.descriptionEntry.delete(0, END)
         self.shareMessageEntry.delete(0,END)
         self.addressEntry.delete(0, END)
+        self.locationNameEntry.delete(0, END)
         self.latEntry.delete(0, END)
         self.longitudeEntry.delete(0, END)
         self.pictureEntry.delete(0, END)
-        self.colorPictureEntry.delete(0, END)
         self.dateNumEntry.delete(0, END)
+        self.startTimeEntry.delete(0, END)
+        self.endTimeEntry.delete(0, END)
+    
     def attachPicture(self):
         root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
         self.pictureName.set(os.path.basename(root.filename))
